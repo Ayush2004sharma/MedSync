@@ -3,7 +3,7 @@ import axios from "axios";
 import { getToken } from "./auth";
 
 const api = axios.create({
-  baseURL: "http://localhost:5000/api",
+  baseURL: "https://medsync-backend-oyxb.onrender.com",
   withCredentials: true, // optional if backend uses cookies
 });
 
