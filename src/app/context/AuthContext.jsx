@@ -69,7 +69,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   // Login
-const login = async ({ email, password }, type = "user") => {
+const login = async ({ email, password }, type ) => {
   dispatch({ type: "LOADING" });
   const url = type === "doctor" ? "/doctors/login" : "/users/login";
 
