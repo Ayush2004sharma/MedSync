@@ -23,12 +23,6 @@ export default function DoctorDashboardPage() {
     <div>
       <DoctorProfileCard />
     </div>
-
-    {/* Right Column: Availability */}
-    <div>
-      {console.log(user, 'user in doctor dashboard')}
-      <DoctorAvailabilitySection doctorId={user} />
-    </div>
   </div>
 </div>
 
