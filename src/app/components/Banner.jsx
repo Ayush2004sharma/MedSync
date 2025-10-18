@@ -3,8 +3,12 @@
 import { assets } from '../assets/assets_frontend/assets';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useAuthContext } from '../context/AuthContext';
+
 
 export default function Banner() {
+// or whatever your context exposes (isLoggedIn, token, etc.)
+const {isLoggedIn} = useAuthContext(); 
   return (
     <div className="w-full px-4 sm:px-6 ">
       <div className="bg-blue-600 rounded-2xl max-w-6xl mx-auto flex flex-col md:flex-row items-stretch justify-between p-6 md:p-10 text-white overflow-hidden shadow-lg min-h-[320px]">
@@ -15,9 +19,9 @@ export default function Banner() {
             Book Appointment <br />
             With 100+ Trusted Doctors
           </h2>
-          <Link href="/pages/register">
+          <Link href={isLoggedIn ? "/pages/doctors" : "/pages/register"}>
             <button className="bg-white text-blue-600 font-medium px-6 py-3 mt-4 rounded-full text-base sm:text-lg hover:bg-blue-100 transition">
-              Create Account
+              {isLoggedIn ? "Explore Now" : "Create Account"}
             </button>
           </Link>
         </div>
