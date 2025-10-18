@@ -1,12 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import DoctorCard from '@/app/components/doctor/DoctorCard';
 import DoctorSearchBar from '@/app/components/SearchBar';
 import api from '@/app/utils/api';
 
-export default function DoctorListPage() {
+// Component that uses useSearchParams
+function DoctorListContent() {
   const searchParams = useSearchParams();
   const [allDoctors, setAllDoctors] = useState([]);
   const [filteredDoctors, setFilteredDoctors] = useState([]);
@@ -39,9 +40,7 @@ export default function DoctorListPage() {
     setLoading(true);
     setError(null);
     try {
-      console.log('🔍 Fetching all doctors...');
       const res = await api.get('/doctors/all');
-      console.log('✅ Fetched doctors:', res.data);
       setAllDoctors(res.data || []);
       setFilteredDoctors(res.data || []);
     } catch (err) {
@@ -56,12 +55,6 @@ export default function DoctorListPage() {
   const filterDoctors = () => {
     let filtered = [...allDoctors];
 
-    console.log('Starting filter with:', { 
-      specialty: query.specialty, 
-      search: query.city,
-      totalDoctors: allDoctors.length 
-    });
-
     // Filter by specialty (exact match, case-insensitive)
     if (query.specialty && query.specialty.trim() !== '') {
       const specialtyLower = query.specialty.toLowerCase().trim();
@@ -69,7 +62,6 @@ export default function DoctorListPage() {
         const docSpecialty = (doc.specialty || '').toLowerCase().trim();
         return docSpecialty === specialtyLower;
       });
-      console.log(`After specialty filter: ${filtered.length} doctors`);
     }
 
     // Filter by name or city (fuzzy search)
@@ -84,10 +76,8 @@ export default function DoctorListPage() {
         
         return nameMatch || addressMatch;
       });
-      console.log(`After name/city filter: ${filtered.length} doctors`);
     }
 
-    console.log(`🔎 Final filtered result: ${filtered.length} doctors`);
     setFilteredDoctors(filtered);
   };
 
@@ -222,5 +212,21 @@ export default function DoctorListPage() {
         )}
       </div>
     </div>
+  );
+}
+
+// Main export with Suspense wrapper
+export default function DoctorListPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mb-4"></div>
+          <p className="text-gray-600 text-lg">Loading...</p>
+        </div>
+      </div>
+    }>
+      <DoctorListContent />
+    </Suspense>
   );
 }
