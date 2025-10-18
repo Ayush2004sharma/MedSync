@@ -1,9 +1,10 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import api from '@/app/utils/api';
 
-const SPECIALTIES = [
-  'All',
+// Fallback specialties if API fails
+const DEFAULT_SPECIALTIES = [
   'Cardiology',
   'Dermatology',
   'Orthopedics',
@@ -15,6 +16,30 @@ const SPECIALTIES = [
 ];
 
 export default function DoctorSearchBar({ query, setQuery, onSearch }) {
+  const [specialties, setSpecialties] = useState(['All', ...DEFAULT_SPECIALTIES]);
+  const [isLoadingSpecialties, setIsLoadingSpecialties] = useState(true);
+
+  // Fetch unique specialties from backend
+  useEffect(() => {
+    const fetchSpecialties = async () => {
+      try {
+        console.log('🔍 Fetching specialties...');
+        const res = await api.get('/doctors/specialties');
+        console.log('✅ Fetched specialties:', res.data);
+        
+        if (res.data && res.data.length > 0) {
+          setSpecialties(['All', ...res.data]);
+        }
+      } catch (err) {
+        console.error('❌ Failed to fetch specialties, using defaults:', err);
+        // Keep using default specialties
+      } finally {
+        setIsLoadingSpecialties(false);
+      }
+    };
+    fetchSpecialties();
+  }, []);
+
   const handleSubmit = (e) => {
     e.preventDefault();
     onSearch();
@@ -23,7 +48,7 @@ export default function DoctorSearchBar({ query, setQuery, onSearch }) {
   return (
     <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <h1 className="text-3xl sm:text-4xl font-bold text-center text-gray-900 mb-8">
-        🩺 Find a Doctor Near You
+        🩺 Find a Doctor
       </h1>
 
       <form
@@ -39,8 +64,9 @@ export default function DoctorSearchBar({ query, setQuery, onSearch }) {
             value={query.specialty}
             onChange={(e) => setQuery((q) => ({ ...q, specialty: e.target.value }))}
             className="w-full px-4 py-2 rounded-lg border border-gray-300 text-base bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            disabled={isLoadingSpecialties}
           >
-            {SPECIALTIES.map((s) => (
+            {specialties.map((s) => (
               <option key={s} value={s === 'All' ? '' : s}>
                 {s}
               </option>
@@ -48,14 +74,14 @@ export default function DoctorSearchBar({ query, setQuery, onSearch }) {
           </select>
         </div>
 
-        {/* City */}
+        {/* Search by Name or City */}
         <div className="flex-1">
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            City (optional)
+            Search by Name or City
           </label>
           <input
             type="text"
-            placeholder="e.g. Delhi"
+            placeholder="e.g. Dr. Smith or Delhi"
             value={query.city}
             onChange={(e) => setQuery((q) => ({ ...q, city: e.target.value }))}
             className="w-full px-4 py-2 rounded-lg border border-gray-300 text-base bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
