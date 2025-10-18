@@ -23,7 +23,6 @@ export default function DoctorCard({ doctor, showDistance = false }) {
     phone = 'N/A',
     experience = 0,
     fee = 'N/A',
-    status = 'offline',
     profilePic,
     distance, // Distance in km from proximity search
   } = doctor;
@@ -41,25 +40,13 @@ export default function DoctorCard({ doctor, showDistance = false }) {
           alt={name}
           className="w-16 h-16 rounded-full object-cover border-2 border-blue-400 shadow-md"
           onError={(e) => {
-            e.target.onerror = null; // Prevent infinite loop
+            e.target.onerror = null;
             e.target.src = defaultDoctorImage;
           }}
         />
         <div className="flex-1">
           <h2 className="text-xl font-bold text-blue-800">{name}</h2>
           <p className="text-sm text-blue-600">{specialty}</p>
-          <p
-            className={`text-xs font-semibold mt-1 ${
-              status === 'available'
-                ? 'text-green-600'
-                : status === 'busy'
-                ? 'text-yellow-600'
-                : 'text-red-500'
-            }`}
-          >
-            {status === 'available' ? '🟢 Available' : 
-             status === 'busy' ? '🟡 Busy' : '⚫ Offline'}
-          </p>
         </div>
       </div>
 
@@ -105,15 +92,10 @@ export default function DoctorCard({ doctor, showDistance = false }) {
       {/* Buttons */}
       <div className="flex justify-end gap-3 mt-6">
         <button
-          className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${
-            status === 'available'
-              ? 'bg-blue-600 text-white hover:bg-blue-700'
-              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-          }`}
-          onClick={() => status === 'available' && router.push(`/pages/book/${_id}`)}
-          disabled={status !== 'available'}
+          className="px-4 py-2 text-sm font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-all"
+          onClick={() => router.push(`/pages/book/${_id}`)}
         >
-          {status === 'available' ? 'Book Now' : 'Not Available'}
+          Book Now
         </button>
         <button
           className="px-4 py-2 text-sm font-medium rounded-lg bg-white border border-blue-400 text-blue-600 hover:bg-blue-50 transition-all"

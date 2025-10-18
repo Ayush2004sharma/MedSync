@@ -1,11 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import DoctorCard from '@/app/components/doctor/DoctorCard';
 import DoctorSearchBar from '@/app/components/SearchBar';
 import api from '@/app/utils/api';
 
 export default function DoctorListPage() {
+  const searchParams = useSearchParams();
   const [allDoctors, setAllDoctors] = useState([]);
   const [filteredDoctors, setFilteredDoctors] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -14,6 +16,13 @@ export default function DoctorListPage() {
     specialty: '',
     city: '',
   });
+
+  // Load query parameters from URL on mount
+  useEffect(() => {
+    const specialty = searchParams.get('specialty') || '';
+    const city = searchParams.get('city') || '';
+    setQuery({ specialty, city });
+  }, [searchParams]);
 
   // Fetch all doctors on mount
   useEffect(() => {
@@ -58,7 +67,6 @@ export default function DoctorListPage() {
       const specialtyLower = query.specialty.toLowerCase().trim();
       filtered = filtered.filter(doc => {
         const docSpecialty = (doc.specialty || '').toLowerCase().trim();
-        console.log(`Comparing: "${docSpecialty}" === "${specialtyLower}"`, docSpecialty === specialtyLower);
         return docSpecialty === specialtyLower;
       });
       console.log(`After specialty filter: ${filtered.length} doctors`);
@@ -71,11 +79,8 @@ export default function DoctorListPage() {
         const name = (doc.name || '').toLowerCase();
         const address = (doc.clinicAddress || '').toLowerCase();
         
-        // Check if search term is anywhere in name or address
         const nameMatch = name.includes(searchTerm);
         const addressMatch = address.includes(searchTerm);
-        
-        console.log(`Doctor: ${doc.name}, Name Match: ${nameMatch}, Address Match: ${addressMatch}`);
         
         return nameMatch || addressMatch;
       });
