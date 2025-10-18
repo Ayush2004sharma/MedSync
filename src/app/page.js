@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Banner from './components/Banner';
 import DoctorSearchBar from './components/SearchBar';
+import SpecialtySection from './components/specialities';
 import AboutUsSection from './components/About';
 import ContactUsSection from './components/Contact';
 
@@ -14,18 +15,17 @@ export default function HomePage() {
   const handleSearch = (e) => {
     if (e) e.preventDefault();
     
-    // Build URL with search parameters
     const params = new URLSearchParams();
     if (query.specialty) params.append('specialty', query.specialty);
     if (query.city) params.append('city', query.city);
     
-    // Navigate to doctors page with query parameters
     const queryString = params.toString();
     router.push(`/pages/doctors${queryString ? `?${queryString}` : ''}`);
   };
 
   return (
     <div className="min-h-screen bg-gray-50 py-10 px-0">
+      {/* Hero Banner */}
       <Banner />
       
       <div className="w-full space-y-8">
@@ -38,17 +38,12 @@ export default function HomePage() {
           />
         </div>
 
-        {/* Quick Stats or Featured Doctors Section */}
+        {/* Specialty Section - NEW */}
+        <SpecialtySection />
+
+        {/* View All Doctors CTA */}
         <div className="w-full px-4 py-6">
-          <div className="max-w-7xl mx-auto">
-            <h2 className="text-3xl font-bold text-blue-800 mb-6 text-center">
-              Find the Best Doctors Near You
-            </h2>
-            <p className="text-center text-gray-600 mb-8">
-              Book appointments with top-rated doctors in your area
-            </p>
-            
-            {/* Call to Action */}
+          
             <div className="flex justify-center">
               <button
                 onClick={() => router.push('/pages/doctors')}
@@ -56,7 +51,7 @@ export default function HomePage() {
               >
                 View All Doctors
               </button>
-            </div>
+           
           </div>
         </div>
 
