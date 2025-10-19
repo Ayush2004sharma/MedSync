@@ -3,7 +3,7 @@
 import React from 'react';
 import { useAuthContext } from '@/app/context/AuthContext';
 import DoctorProfileCard from './DoctorProfileCard';
-import DoctorAvailabilitySection from './DoctorAvailabilty';
+
 
 export default function DoctorDashboardPage() {
   const { user, role, isLoggedIn } = useAuthContext();
