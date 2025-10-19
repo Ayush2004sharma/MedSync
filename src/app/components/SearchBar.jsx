@@ -23,9 +23,9 @@ export default function DoctorSearchBar({ query, setQuery, onSearch }) {
   useEffect(() => {
     const fetchSpecialties = async () => {
       try {
-        console.log('🔍 Fetching specialties...');
+      
         const res = await api.get('/doctors/specialties');
-        console.log('✅ Fetched specialties:', res.data);
+
         
         if (res.data && res.data.length > 0) {
           setSpecialties(['All', ...res.data]);

@@ -22,15 +22,13 @@ export default function AppointmentsPage() {
         
         // SIMPLIFIED: No need for userId in URL anymore
         const url = role === "doctor" ? "/appointments/doctor" : "/appointments/user";
-        
-        console.log("🔍 Fetching appointments for:", role, "→", url);
+    
 
         const res = await api.get(url, {
           headers: { Authorization: `Bearer ${token}` },
           signal: controller.signal, // Attach abort signal
         });
 
-        console.log("📦 API response data:", res.data);
 
         // Access nested appointments array
         const data = res.data?.appointments || [];
@@ -42,7 +40,7 @@ export default function AppointmentsPage() {
           console.log('Request was cancelled');
           return;
         }
-        console.error("❌ Error fetching appointments:", err);
+    
         setError("Failed to load appointments. Please try again.");
       } finally {
         setLoading(false);
