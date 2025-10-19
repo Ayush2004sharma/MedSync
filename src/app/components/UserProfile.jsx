@@ -5,13 +5,16 @@ import api from "../utils/api";
 import ProfileCard from "./ProfileCard";
 import AppointmentCard from "./AppointmentCard";
 import { useAuthContext } from "../context/AuthContext";
+import Link from "next/link";
 import { 
   Calendar, 
   Clock, 
   CheckCircle, 
   XCircle, 
   AlertCircle,
-  TrendingUp 
+  TrendingUp,
+  MessageCircle,
+  Search
 } from "lucide-react";
 
 export default function UserProfilePage() {
@@ -28,7 +31,6 @@ export default function UserProfilePage() {
       try {
         const token = localStorage.getItem("token");
         
-        // Use dashboard endpoint for users, profile + appointments for doctors
         if (role === "user") {
           const res = await api.get("/users/dashboard", {
             headers: { Authorization: `Bearer ${token}` },
@@ -36,7 +38,6 @@ export default function UserProfilePage() {
           });
           setDashboardData(res.data);
         } else {
-          // For doctors, fetch separately (or create similar doctor dashboard)
           const [profileRes, appointmentsRes] = await Promise.all([
             api.get("/doctors/profile", {
               headers: { Authorization: `Bearer ${token}` },
@@ -51,7 +52,7 @@ export default function UserProfilePage() {
           setDashboardData({
             user: profileRes.data,
             recentAppointments: appointmentsRes.data?.appointments || [],
-            statistics: null // No stats for doctor yet
+            statistics: null
           });
         }
       } catch (err) {
@@ -107,7 +108,6 @@ export default function UserProfilePage() {
         {/* Statistics Cards - Only for Users */}
         {role === "user" && statistics && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            {/* Total Appointments */}
             <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg p-6 text-white">
               <div className="flex items-center justify-between">
                 <div>
@@ -118,7 +118,6 @@ export default function UserProfilePage() {
               </div>
             </div>
 
-            {/* Booked */}
             <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-lg p-6 text-white">
               <div className="flex items-center justify-between">
                 <div>
@@ -129,7 +128,6 @@ export default function UserProfilePage() {
               </div>
             </div>
 
-            {/* Pending */}
             <div className="bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-xl shadow-lg p-6 text-white">
               <div className="flex items-center justify-between">
                 <div>
@@ -140,7 +138,6 @@ export default function UserProfilePage() {
               </div>
             </div>
 
-            {/* Upcoming */}
             <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-lg p-6 text-white">
               <div className="flex items-center justify-between">
                 <div>
@@ -150,6 +147,96 @@ export default function UserProfilePage() {
                 <TrendingUp className="w-12 h-12 text-purple-200" />
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Quick Actions - For Users */}
+        {role === "user" && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <Link href="/pages/my-messages" className="group">
+              <div className="bg-gradient-to-br from-teal-500 to-teal-600 rounded-xl shadow-lg p-6 text-white hover:shadow-2xl transition-all duration-200 hover:scale-105">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-teal-100 text-sm font-medium">My Messages</p>
+                    <p className="text-2xl font-bold mt-2">View Chats</p>
+                  </div>
+                  <MessageCircle className="w-12 h-12 text-teal-200 group-hover:scale-110 transition-transform" />
+                </div>
+                <p className="text-teal-100 text-xs mt-3">Chat with your doctors →</p>
+              </div>
+            </Link>
+
+            <Link href="/pages/appointments" className="group">
+              <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg p-6 text-white hover:shadow-2xl transition-all duration-200 hover:scale-105">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-blue-100 text-sm font-medium">Appointments</p>
+                    <p className="text-2xl font-bold mt-2">{statistics?.totalAppointments || 0}</p>
+                  </div>
+                  <Calendar className="w-12 h-12 text-blue-200 group-hover:scale-110 transition-transform" />
+                </div>
+                <p className="text-blue-100 text-xs mt-3">View all appointments →</p>
+              </div>
+            </Link>
+
+            <Link href="/pages/doctors" className="group">
+              <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-lg p-6 text-white hover:shadow-2xl transition-all duration-200 hover:scale-105">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-purple-100 text-sm font-medium">Find Doctors</p>
+                    <p className="text-2xl font-bold mt-2">Book Now</p>
+                  </div>
+                  <Search className="w-12 h-12 text-purple-200 group-hover:scale-110 transition-transform" />
+                </div>
+                <p className="text-purple-100 text-xs mt-3">Search specialists →</p>
+              </div>
+            </Link>
+          </div>
+        )}
+
+        {/* Doctor Quick Actions */}
+        {role === "doctor" && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <Link href="/pages/doctor-chat" className="group">
+              <div className="bg-gradient-to-br from-teal-500 to-teal-600 rounded-xl shadow-lg p-6 text-white hover:shadow-2xl transition-all duration-200 hover:scale-105">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-teal-100 text-sm font-medium">Patient Messages</p>
+                    <p className="text-2xl font-bold mt-2">View Chats</p>
+                  </div>
+                  <MessageCircle className="w-12 h-12 text-teal-200 group-hover:scale-110 transition-transform" />
+                </div>
+                <p className="text-teal-100 text-xs mt-3">Click to view all conversations →</p>
+              </div>
+            </Link>
+
+            <Link href="/pages/appointments" className="group">
+              <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg p-6 text-white hover:shadow-2xl transition-all duration-200 hover:scale-105">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-blue-100 text-sm font-medium">Appointments</p>
+                    <p className="text-2xl font-bold mt-2">{recentAppointments?.length || 0}</p>
+                  </div>
+                  <Calendar className="w-12 h-12 text-blue-200 group-hover:scale-110 transition-transform" />
+                </div>
+                <p className="text-blue-100 text-xs mt-3">Manage your schedule →</p>
+              </div>
+            </Link>
+
+            <Link href="/pages/profile" className="group">
+              <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-lg p-6 text-white hover:shadow-2xl transition-all duration-200 hover:scale-105">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-purple-100 text-sm font-medium">My Profile</p>
+                    <p className="text-2xl font-bold mt-2">Edit Info</p>
+                  </div>
+                  <svg className="w-12 h-12 text-purple-200 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                </div>
+                <p className="text-purple-100 text-xs mt-3">Update your information →</p>
+              </div>
+            </Link>
           </div>
         )}
 

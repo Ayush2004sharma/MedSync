@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { MapPin, Phone, Clock, Award, DollarSign, Navigation, MessageCircle } from 'lucide-react';
 import api from '@/app/utils/api';
+import { useAuthContext } from '@/app/context/AuthContext'; // Import your AuthContext
 
 // Default doctor avatar
 const defaultDoctorImage = "data:image/svg+xml,%3Csvg width='96' height='96' viewBox='0 0 96 96' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='48' cy='48' r='48' fill='%233B82F6'/%3E%3Cpath d='M48 30C39.716 30 33 36.716 33 45C33 53.284 39.716 60 48 60C56.284 60 63 53.284 63 45C63 36.716 56.284 30 48 30Z' fill='white'/%3E%3Cpath d='M48 63C34.745 63 24 72.402 24 84H72C72 72.402 61.255 63 48 63Z' fill='white'/%3E%3C/svg%3E";
@@ -17,6 +18,9 @@ export default function DoctorProfilePage() {
   const [doctor, setDoctor] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // Use AuthContext
+  const { user, isLoggedIn, loading: authLoading } = useAuthContext();
 
   useEffect(() => {
     const fetchDoctor = async () => {
@@ -49,14 +53,20 @@ export default function DoctorProfilePage() {
     }
   };
 
-  // Function to handle chat (placeholder for now)
+  // Function to handle chat
   const handleChat = () => {
-    alert('Chat feature coming soon! This will allow you to message the doctor directly.');
-    // TODO: Implement chat functionality
-    // router.push(`/pages/chat/${id}`);
+    // Check if user is logged in using AuthContext
+    if (!isLoggedIn || !user) {
+      alert('Please login to chat with the doctor');
+      router.push('/pages/login');
+      return;
+    }
+
+    // Navigate to chat page with doctor ID
+    router.push(`/pages/chat/${id}`);
   };
 
-  if (loading) {
+  if (loading || authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-100">
         <div className="text-center">

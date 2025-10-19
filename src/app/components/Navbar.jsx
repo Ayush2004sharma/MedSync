@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
+import { Menu, X, MessageCircle } from "lucide-react";
 import { useAuthContext } from "../context/AuthContext";
 
 export default function Navbar() {
@@ -93,6 +93,19 @@ export default function Navbar() {
           </nav>
 
           <div className="flex items-center space-x-3">
+            {/* Messages Icon - For both Doctors and Users */}
+            {user && (
+              <Link
+                href={role === 'doctor' ? '/pages/doctor-chat' : '/pages/my-messages'}
+                className="relative p-2 rounded-full hover:bg-blue-50 transition-colors duration-200"
+                title="Messages"
+              >
+                <MessageCircle className="w-6 h-6 text-blue-700" />
+                {/* Optional: Unread message badge */}
+                {/* <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span> */}
+              </Link>
+            )}
+
             {user ? (
               <div className="relative" ref={dropdownRef}>
                 <button
@@ -128,6 +141,15 @@ export default function Navbar() {
                           {appointmentCount}
                         </span>
                       )}
+                    </Link>
+                    {/* Messages link in dropdown */}
+                    <Link
+                      href={role === 'doctor' ? '/pages/doctor-chat' : '/pages/my-messages'}
+                      onClick={() => setDropdownOpen(false)}
+                      className="flex items-center gap-2 px-4 py-3 text-gray-900 hover:bg-blue-50 transition-colors duration-150"
+                    >
+                      <MessageCircle className="w-4 h-4" />
+                      <span>My Messages</span>
                     </Link>
                     <button
                       onClick={() => {
@@ -192,6 +214,21 @@ export default function Navbar() {
           <Link href="/#contact" onClick={closeMobileMenu} className="py-3 px-4 hover:bg-blue-50 rounded-lg transition-colors duration-150">
             Contact
           </Link>
+
+          {/* Messages for both users and doctors in mobile menu */}
+          {user && (
+            <>
+              <div className="border-t border-gray-200 my-2" />
+              <Link 
+                href={role === 'doctor' ? '/pages/doctor-chat' : '/pages/my-messages'} 
+                onClick={closeMobileMenu} 
+                className="py-3 px-4 hover:bg-blue-50 rounded-lg transition-colors duration-150 flex items-center gap-2"
+              >
+                <MessageCircle className="w-5 h-5 text-blue-700" />
+                <span>My Messages</span>
+              </Link>
+            </>
+          )}
 
           {!user && (
             <>
